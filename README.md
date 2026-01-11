@@ -1,0 +1,1 @@
+# nonoichi-waste-app
