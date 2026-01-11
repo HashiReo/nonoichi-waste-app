@@ -44,3 +44,28 @@
         2. カメラを起動して写真を撮る画面を作る。
         3. 撮った写真をPhase3のサーバーに送信し、結果を表示させる画面を作る。
     - 成果物: iPhone/Androidアプリ
+
+## ディレクトリ構成
+
+```
+nonoichi-waste-app/
+├── .devcontainer/
+│   └── devcontainer.json   # Python用の環境設定
+├── backend/
+│   ├── requirements.txt
+│   ├── collector/          # データ収集（Phase 1）
+│   │   └── fetch_test.py
+│   ├── ml/                 # AI学習（Phase 2）
+│   ├── app/                # APIサーバー （Phase 3）
+│   └── data/               # 収集データ
+│
+├── mobile_app/             # Dlutter環境
+│   ├── android/            # Android用設定
+│   ├── ios/                # iOS用設定
+│   ├── lib/                # アプリ画面のプログラム
+│   │   ├── main.dart
+│   │   └── screens/
+│   └── pubspec.yml         # Flutterのライブラリ設定
+│
+└── README.md               # プロジェクト全体の説明書
+```
