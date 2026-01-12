@@ -54,10 +54,13 @@ nonoichi-waste-app/
 ├── backend/
 │   ├── requirements.txt
 │   ├── collector/          # データ収集（Phase 1）
-│   │   └── fetch_test.py
+│   │   │── fetch_test.py                  # 通信確認ファイル
+│   │   └── collect_data.py                # 辞典データCSV作成
 │   ├── ml/                 # AI学習（Phase 2）
 │   ├── app/                # APIサーバー （Phase 3）
-│   └── data/               # 収集データ
+│   │── data/               # 収集データ
+│   │   └── raw/
+│   │       └── nonoichi_garbage.csv
 │
 ├── mobile_app/             # Dlutter環境
 │   ├── android/            # Android用設定
