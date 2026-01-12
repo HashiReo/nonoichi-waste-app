@@ -68,7 +68,7 @@ def parse_table_rows(html:str) -> pd.DataFrame:
 
     table = soup.select_one("table.table.table-striped.table-hover")
     if table is None:
-        ValueError("target table not found")
+        raise ValueError("target table not found")
 
     rows = []
     for tr in table.select("tbody tr"):
@@ -152,10 +152,12 @@ def main():
         # 取得
         try:
             html = fetch_page(session, page_num)
+            error_count = 0 # 成功したらリセット
         except requests.exceptions.RequestException as e:
             failed_pages.append(page_num)
             print(f"[Page {page_num}] -> 取得失敗: {e}")
-            if len(error_count) >= 4:
+            error_count += 1
+            if error_count >= 4:
                 print(" -> 連続エラーが多いため終了します。")
                 break
             else:
