@@ -92,11 +92,6 @@ def parse_table_rows(html:str) -> pd.DataFrame:
         })
 
     return pd.DataFrame(rows)
-
-def normalize_df(df: pd.DataFrame) -> pd.DataFrame:
-    # 目的列チェック
-    if not EXPECTED_COLS.issubset(set(df.columns)):
-        raise ValueError(f"Unexpected columns: {df.columns.tolist()}")
     
 def atomic_write_csv(df: pd.DataFrame, path: str, encoding: str = "utf-8-sig") -> None:
     """
@@ -122,83 +117,82 @@ def main():
     with requests.Session() as session:
         session.headers.update(HEADERS)
 
-
-    # 1ページ目を処理
-    try:
-        # BASE_URLから総ページ数を取得する
-        print(f"[Page {START_PAGE}] を取得中...")
-        html1 = fetch_page(session, START_PAGE)
-        total_pages = parse_total_pages(html1) or MAX_PAGE
-        print(f"総ページ数（推定/取得）: {total_pages}")
-
-        # HTML文字列内の<table>タグを表としてDataFrameに読み込む
-        df1 = parse_table_rows(html1)
-        if len(df1) == 0:
-            print("[Page 1]データがありません。終了します。")
-            return
-        all_data.append(df1.assign(page=START_PAGE))
-        print(f"[Page {START_PAGE}] -> {len(df1)} 件のデータを見つけました。")
-
-    except ValueError as e:
-        print(f"[Page {START_PAGE}] -> 表データが見つかりません。終了します。")
-
-    # 2ページ目以降をループ処理
-    for page_num in range(START_PAGE + 1, total_pages + 1):
-        print(f"[Page {page_num}] を取得中...")
-
-        # アクセスマナー
-        time.sleep(1.0)
-
-        # 取得
+        # 1ページ目を処理
         try:
-            html = fetch_page(session, page_num)
-            error_count = 0 # 成功したらリセット
-        except requests.exceptions.RequestException as e:
-            failed_pages.append(page_num)
-            print(f"[Page {page_num}] -> 取得失敗: {e}")
-            error_count += 1
-            if error_count >= 4:
-                print(" -> 連続エラーが多いため終了します。")
-                break
-            else:
-                continue
-        
-        # 解析
-        try:
-            df = parse_table_rows(html)
+            # BASE_URLから総ページ数を取得する
+            print(f"[Page {START_PAGE}] を取得中...")
+            html1 = fetch_page(session, START_PAGE)
+            total_pages = parse_total_pages(html1) or MAX_PAGE
+            print(f"総ページ数（推定/取得）: {total_pages}")
+
+            # HTML文字列内の<table>タグを表としてDataFrameに読み込む
+            df1 = parse_table_rows(html1)
+            if len(df1) == 0:
+                print("[Page 1]データがありません。終了します。")
+                return
+            all_data.append(df1.assign(page=START_PAGE))
+            print(f"[Page {START_PAGE}] -> {len(df1)} 件のデータを見つけました。")
+
         except ValueError as e:
-            print(f"[Page {page_num}] -> 表データが見つかりません。終了します。")
-            failed_pages.append(page_num)
-            print("HTML構造が想定外の可能性があるため停止します。")
-            break
+            print(f"[Page {START_PAGE}] -> 表データが見つかりません。終了します。")
 
-        # 終了判定
-        if len(df) == 0:
-            print(f"[Page {page_num}] -> データがありません。終了します。")
-            break
+        # 2ページ目以降をループ処理
+        for page_num in range(START_PAGE + 1, total_pages + 1):
+            print(f"[Page {page_num}] を取得中...")
 
-        all_data.append(df.assign(page=page_num))
-        print(f"[Page {page_num}] -> {len(df)} 件のデータを見つけました。")
+            # アクセスマナー
+            time.sleep(1.0)
 
-    # 保存処理
-    if len(all_data) > 0:
-        print("\n=== 全データを結合しています ===")
-        final_df = pd.concat(all_data, ignore_index=True)
-        atomic_write_csv(final_df, OUTPUT_FILE)
-        print(f"保存完了！場所: {OUTPUT_FILE}")
-        print(f"データ総数: {len(final_df)} 件")
+            # 取得
+            try:
+                html = fetch_page(session, page_num)
+                error_count = 0 # 成功したらリセット
+            except requests.exceptions.RequestException as e:
+                failed_pages.append(page_num)
+                print(f"[Page {page_num}] -> 取得失敗: {e}")
+                error_count += 1
+                if error_count >= 4:
+                    print(" -> 連続エラーが多いため終了します。")
+                    break
+                else:
+                    continue
+            
+            # 解析
+            try:
+                df = parse_table_rows(html)
+            except ValueError as e:
+                print(f"[Page {page_num}] -> 表データが見つかりません。終了します。")
+                failed_pages.append(page_num)
+                print("HTML構造が想定外の可能性があるため停止します。")
+                break
 
-        # 失敗ページを記録
-        if failed_pages:
-            with open(FAILED_PAGES_FILE, "w", encoding="utf-8") as f:
-                for p in failed_pages:
-                    f.write(f"{p}\n")
-            print(f"取得失敗ページを保存しました: {FAILED_PAGES_FILE} (件数: {len(failed_pages)}")
-        # 先頭確認
-        print("先頭5件")        
-        print(final_df.head())
-    else:
-        print("取得したデータがありません。")
+            # 終了判定
+            if len(df) == 0:
+                print(f"[Page {page_num}] -> データがありません。終了します。")
+                break
+
+            all_data.append(df.assign(page=page_num))
+            print(f"[Page {page_num}] -> {len(df)} 件のデータを見つけました。")
+
+        # 保存処理
+        if len(all_data) > 0:
+            print("\n=== 全データを結合しています ===")
+            final_df = pd.concat(all_data, ignore_index=True)
+            atomic_write_csv(final_df, OUTPUT_FILE)
+            print(f"保存完了！場所: {OUTPUT_FILE}")
+            print(f"データ総数: {len(final_df)} 件")
+
+            # 失敗ページを記録
+            if failed_pages:
+                with open(FAILED_PAGES_FILE, "w", encoding="utf-8") as f:
+                    for p in failed_pages:
+                        f.write(f"{p}\n")
+                print(f"取得失敗ページを保存しました: {FAILED_PAGES_FILE} (件数: {len(failed_pages)})")
+            # 先頭確認
+            print("先頭5件")        
+            print(final_df.head())
+        else:
+            print("取得したデータがありません。")
 
 if __name__ == "__main__":
     main()
