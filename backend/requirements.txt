@@ -3,3 +3,4 @@ beautifulsoup4    # HTML解析用
 pandas            # データ整理（表計算）
 lxml              # 高速処理エンジン
 openpyxl          # Excelファイルを扱う（必須ではないかも）
+pyyaml            # PDF処理
