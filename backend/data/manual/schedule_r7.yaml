@@ -14,5 +14,73 @@ categories:
     deadline_time: "07:00"
 
 areas: []
-area_groups: []
-collection_rules: []
+area_groups: 
+  - id: "general_mon_thu"
+    name: "一般ごみ（月・木）"
+    areas:
+      - "本町１丁目"
+      - "本町２丁目"
+      - "本町５丁目"
+      - "本町６丁目"
+      - "若松町"
+      - "横宮町"
+      - "三納"
+      - "位川"
+      - "太平寺"
+      - "稲荷"
+      - "堀内"
+      - "押野"
+      - "押越"
+      - "高橋町"
+      - "扇が丘"
+      - "住吉町"
+      - "菅原町"
+      - "菅原団地"
+
+  - id: "general_tue_fri"
+    name: "一般ごみ（火・金）"
+    areas:
+      - "本町３丁目"
+      - "本町４丁目"
+      - "白山町"
+      - "粟田"
+      - "矢作"
+      - "藤平田"
+      - "下林"
+      - "中林"
+      - "上林"
+      - "新庄"
+      - "藤平"
+      - "清金"
+      - "末松"
+      - "田尻町"
+      - "三日市"
+      - "二日市"
+      - "徳用"
+      - "蓮花寺町"
+      - "柳町"
+      - "長池"
+      - "野代"
+      - "あすなろ団地"
+      - "御経塚"
+
+collection_rules: 
+  - category: "一般ごみ"
+    area_group_id: "general_mon_thu"
+    rule:
+      type: "weekly"
+      weekdays: ["MON", "THU"]
+    notes:
+      year_end:
+        last_collection: "2025-12-29" # 年末は2025年12月29日（月）まで収集
+        restart: "2026-01-05"         # 年始は2026年1月5日（月）から収集
+  
+  - category: "一般ごみ"
+    area_group_id: "general_tue_fri"
+    rule:
+      type: "weekly"
+      weekdays: ["TUE", "FRI"]
+    notes:
+      year_end:
+        last_collection: "2025-12-30"
+        restart: "2026-01-06"
