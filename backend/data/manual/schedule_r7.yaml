@@ -1,0 +1,18 @@
+
+
+effective_start: "2025-04-01"
+effective_end:   "2026-03-31"
+
+sources:
+  pdf:
+    title: "家庭ごみ収集日と分け方 2025（令和7）年4月～2026（令和8）年3月"
+    file_path: "reference_materials/2025年度版家庭ごみ収集日と分け方_20260121取得.pdf"
+    fetched_at: "2026-01-21"
+
+categories:
+  - name: "一般ごみ"
+    deadline_time: "07:00"
+
+areas: []
+area_groups: []
+collection_rules: []
