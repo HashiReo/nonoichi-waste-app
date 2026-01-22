@@ -12,6 +12,18 @@ sources:
 categories:
   - name: "一般ごみ"
     deadline_time: "07:00"
+  - name: "燃えないゴミ"
+    deadline_time: "07:30"
+  - name: "あきかん"
+    deadline_time: "07:30"
+  - name: "あきびん"
+    deadline_time: "07:30"
+  - name: "燃える粗大ごみ"
+    deadline_time: "07:30"
+  - name: "ペットボトル"
+    deadline_time: "07:30"
+  - name: "容器包装プラスチック"
+    deadline_time: "07:30"
 
 areas: []
 area_groups: 
