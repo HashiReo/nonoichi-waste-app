@@ -1,5 +1,6 @@
 # /backend/collector/collect_data.py
 # 野々市市分別辞典データ収集スクリプト
+# -> data/raw/nonoichi_garbage.csv に保存
 
 import pandas as pd
 import requests
