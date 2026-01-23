@@ -1,0 +1,8 @@
+﻿category_id,name,deadline_time,disposal_instructions,source_id,updated_at
+cat_9bf70a2bd778,一般ごみ,07:00,,src_pdf_r7,2026-01-23T06:44:59
+cat_8c00dde397f0,燃えないごみ,07:30,,src_pdf_r7,2026-01-23T06:44:59
+cat_eff4f8deb315,あきかん,07:30,,src_pdf_r7,2026-01-23T06:44:59
+cat_65f19c1cfb30,あきびん,07:30,,src_pdf_r7,2026-01-23T06:44:59
+cat_df17a691ebd7,燃える粗大ごみ,07:30,,src_pdf_r7,2026-01-23T06:44:59
+cat_3d452489bf0c,ペットボトル,07:30,,src_pdf_r7,2026-01-23T06:44:59
+cat_f706d06991b5,容器包装プラスチック,07:30,,src_pdf_r7,2026-01-23T06:44:59
