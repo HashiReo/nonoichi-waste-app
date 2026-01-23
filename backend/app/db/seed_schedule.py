@@ -17,6 +17,7 @@ DATA_DIR = BACKEND_DIR / "data"
 EXPORT_DIR = DATA_DIR / "export"
 DB_PATH = DATA_DIR / "db" / "nonoichi_waste.db"
 SCHEDULE_PATH = DATA_DIR / "manual" / "schedule_r7.yaml"
+RAW_ITEMS_CSV = DATA_DIR / "raw" / "nonoichi_garbage.csv"
 
 WEEKDAY_MAP = {"MON": 0, "TUE": 1, "WED": 2, "THU": 3, "FRI": 4, "SAT": 5, "SUN": 6}
 
@@ -240,6 +241,74 @@ def export_csv(conn: sqlite3.Connection) -> None:
         df = pd.read_sql_query(f"SELECT * FROM {t}", conn)
         df.to_csv(EXPORT_DIR / f"{t}.csv", index=False, encoding="utf-8-sig")
 
+def seed_items_from_raw_csv(conn: sqlite3.Connection, source_id: str) -> None:
+    if not RAW_ITEMS_CSV.exists():
+        print(f"⚠️ raw items csv not found: {RAW_ITEMS_CSV} (skip)")
+        return
+
+    df = pd.read_csv(RAW_ITEMS_CSV)
+
+    now = datetime.utcnow().isoformat(timespec="seconds")
+
+    # DBに存在するカテゴリ名→category_id
+    cat_id_by_name = {
+        row[0]: row[1]
+        for row in conn.execute("SELECT name, category_id FROM categories").fetchall()
+    }
+
+    inserted = 0
+    updated = 0
+
+    for _, row in df.iterrows():
+        item_name = str(row["item_name"])
+        category_name = str(row["category"])
+        note = "" if pd.isna(row.get("note")) else str(row.get("note"))
+
+        # collector側のカテゴリ名がschedule側に存在しない可能性があるので、
+        # 無ければ categories に追加して整合を保つ
+        if category_name not in cat_id_by_name:
+            cid = make_id("cat", category_name)
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO categories(category_id, name, source_id, updated_at)
+                VALUES (?, ?, ?, ?)
+                """,
+                (cid, category_name, source_id, now),
+            )
+            cat_id_by_name[category_name] = cid
+
+        item_id = make_id("item", item_name + "|" + category_name)
+        name_norm = normalize_text(item_name)
+        category_id = cat_id_by_name[category_name]
+
+        # UPSERT（同じname_normが来たら更新）
+        cur = conn.execute(
+            """
+            INSERT INTO items(item_id, name, name_norm, category_id, note, source_id, source_url, fetched_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(name_norm) DO UPDATE SET
+              category_id=excluded.category_id,
+              note=excluded.note,
+              updated_at=excluded.updated_at
+            """,
+            (
+                item_id,
+                item_name,
+                name_norm,
+                category_id,
+                note,
+                source_id,
+                "https://gb.hn-kouiki.jp/nonoichi",
+                now,
+                now,
+            ),
+        )
+        # sqlite3のrowcountは信用しにくいので概算（今回は確認だけできればOK）
+        inserted += 1
+
+    conn.commit()
+    print(f"✅ seeded items from raw csv: {inserted} rows")
+
 def main() -> None:
     if not SCHEDULE_PATH.exists():
         raise FileNotFoundError(f"schedule not found: {SCHEDULE_PATH}")
@@ -251,6 +320,14 @@ def main() -> None:
     upsert_categories(conn, schedule, source_id)
     upsert_areas_and_groups(conn, schedule, source_id)
     upsert_rules_and_events(conn, schedule, source_id)
+    # web辞典由来のsource（1行入れる）
+    conn.execute(
+        "INSERT OR REPLACE INTO sources(source_id, source_type, title, url, fetched_at) VALUES (?,?,?,?,datetime('now'))",
+        ("src_web_dict", "web", "分別辞典", "https://gb.hn-kouiki.jp/nonoichi",),
+    )
+    conn.commit()
+
+    seed_items_from_raw_csv(conn, "src_web_dict")
     export_csv(conn)
 
 
