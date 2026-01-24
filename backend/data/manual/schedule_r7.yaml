@@ -9,26 +9,34 @@ sources:
     file_path: "reference_materials/2025年度版家庭ごみ収集日と分け方_20260121取得.pdf"
     fetched_at: "2026-01-21"
 
+# ごみの区分と出し方の締切時間を定義
 categories:
-  - name: "一般ごみ"
+  - id: "burnable"
+    name: "一般ごみ"
     deadline_time: "07:00"
-  - name: "燃えないごみ"
+  - id: "nonburnable"
+    name: "燃えないごみ"
     deadline_time: "07:30"
-  - name: "あきかん"
+  - id: "can"
+    name: "あきかん"
     deadline_time: "07:30"
-  - name: "あきびん"
+  - id: "bottle"
+    name: "あきびん"
     deadline_time: "07:30"
-  - name: "燃える粗大ごみ"
+  - id: "large_burnable"
+    name: "燃える粗大ごみ"
     deadline_time: "07:30"
-  - name: "ペットボトル"
+  - id: "petbottle"
+    name: "ペットボトル"
     deadline_time: "07:30"
-  - name: "容器包装プラスチック"
+  - id: "plastic_container"
+    name: "容器包装プラスチック"
     deadline_time: "07:30"
 
-areas: []
-area_groups: 
-  - id: "general_mon_thu"
-    name: "一般ごみ（月・木）"
+# 各地区がどのグループに属するかを定義
+area_groups:
+  - id: "group_1"
+    name: "地区グループ1"
     areas:
       - "本町１丁目"
       - "本町２丁目"
@@ -43,14 +51,9 @@ area_groups:
       - "堀内"
       - "押野"
       - "押越"
-      - "高橋町"
-      - "扇が丘"
-      - "住吉町"
-      - "菅原町"
-      - "菅原団地"
 
-  - id: "general_tue_fri"
-    name: "一般ごみ（火・金）"
+  - id: "group_2"
+    name: "地区グループ2"
     areas:
       - "本町３丁目"
       - "本町４丁目"
@@ -59,6 +62,19 @@ area_groups:
       - "矢作"
       - "藤平田"
       - "下林"
+
+  - id: "group_3"
+    name: "地区グループ3"
+    areas:
+      - "高橋町"
+      - "扇が丘"
+      - "住吉町"
+      - "菅原町"
+      - "菅原団地"
+
+  - id: "group_4"
+    name: "地区グループ4"
+    areas:
       - "中林"
       - "上林"
       - "新庄"
@@ -76,33 +92,12 @@ area_groups:
       - "あすなろ団地"
       - "御経塚"
 
-  - id: "first_wed_group"
-    name: "第１水曜（もえないごみ・あきかん・あきびん）"
-    areas: 
-      - "本町１丁目"
-      - "本町２丁目"
-      - "本町５丁目"
-      - "本町６丁目"
-      - "若松町"
-      - "横宮町"
-      - "三納"
-      - "位川"
-      - "太平寺"
-      - "稲荷"
-      - "堀内"
-      - "押野"
-      - "押越"
-      - "本町３丁目"
-      - "本町４丁目"
-      - "白山町"
-      - "粟田"
-      - "矢作"
-      - "藤平田"
-      - "下林"
-
-collection_rules: 
-  - category: "一般ごみ"
-    area_group_id: "general_mon_thu"
+# 収集スケジュールルールの定義
+schedule_groups:
+  # 一般ごみ
+  - id: "burn_mon_thu"
+    category_id: "burnable"
+    name: "一般ごみ（月・木）"
     rule:
       type: "weekly"
       weekdays: ["MON", "THU"]
@@ -110,73 +105,185 @@ collection_rules:
       year_end:
         last_collection: "2025-12-29" # 年末は2025年12月29日（月）まで収集
         restart: "2026-01-05"         # 年始は2026年1月5日（月）から収集
-  
-  - category: "一般ごみ"
-    area_group_id: "general_tue_fri"
+
+  - id: "burn_tue_fri"
+    category_id: "burnable"
+    name: "一般ごみ（火・金）"
     rule:
       type: "weekly"
       weekdays: ["TUE", "FRI"]
     notes:
       year_end:
-        last_collection: "2025-12-30"
-        restart: "2026-01-06"
+        last_collection: "2025-12-30" # 年末は2025年12月30日（火）まで収集
+        restart: "2026-01-06"         # 年始は2026年1月6日（火）から収集
 
-  - category: "燃えないごみ"
-    area_group_id: "first_wed_group"
+  # 燃えないごみ
+  - id: "nonburn_1st_wed"
+    category_id: "nonburnable"
+    name: "燃えないごみ（第1水曜）"
     rule:
-      type: "month_dates"
-      months: 
-        "2025-04": [2]
-        "2025-05": [7]
-        "2025-06": [4]
-        "2025-07": [2]
-        "2025-08": [6]
-        "2025-09": [3]
-        "2025-10": [1]
-        "2025-11": [5]
-        "2025-12": [3]
-        "2026-01": [7]
-        "2026-02": [4]
-        "2026-03": [4]
-    notes: 
-      pattern: "第１水曜"
+      type: "monthly_nth_weekday"
+      nth: 1
+      weekday: "wed"
 
-  - category: "あきかん"
-    area_group_id: "first_wed_group"
+  - id: "nonburn_2nd_wed"  
+    category_id: "nonburnable"
+    name: "燃えないごみ（第2水曜）"
     rule:
-      type: "month_dates"
-      months: 
-        "2025-04": [2]
-        "2025-05": [7]
-        "2025-06": [4]
-        "2025-07": [2]
-        "2025-08": [6]
-        "2025-09": [3]
-        "2025-10": [1]
-        "2025-11": [5]
-        "2025-12": [3]
-        "2026-01": [7]
-        "2026-02": [4]
-        "2026-03": [4]
-    notes: 
-      pattern: "第１水曜"
+      type: "monthly_nth_weekday"
+      nth: 2
+      weekday: "wed"
 
-  - category: "あきびん"
-    area_group_id: "first_wed_group"
+  # あきかん
+  - id: "can_1st_wed"
+    category_id: "can"
+    name: "あきかん（第1水曜）"
     rule:
-      type: "month_dates"
-      months: 
-        "2025-04": [2]
-        "2025-05": [7]
-        "2025-06": [4]
-        "2025-07": [2]
-        "2025-08": [6]
-        "2025-09": [3]
-        "2025-10": [1]
-        "2025-11": [5]
-        "2025-12": [3]
-        "2026-01": [7]
-        "2026-02": [4]
-        "2026-03": [4]
-    notes: 
-      pattern: "第１水曜"
+      type: "monthly_nth_weekday"
+      nth: 1
+      weekday: "wed"
+
+  - id: "can_2nd_wed"  
+    category_id: "can"
+    name: "あきかん（第2水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 2
+      weekday: "wed"
+
+  # あきびん
+  - id: "bottle_1st_wed"
+    category_id: "bottle"
+    name: "あきびん（第1水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 1
+      weekday: "wed"
+  
+  - id: "bottle_2nd_wed"  
+    category: "あきびん"
+    name: "あきびん（第2水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 2
+      weekday: "wed"
+
+  # 燃える粗大ごみ
+  - id: "large_burn_3rd_wed"
+    category_id: "large_burnable"
+    name: "燃える粗大ごみ（第3水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 3
+      weekday: "wed"
+
+  - id: "large_burn_4th_wed"
+    category_id: "large_burnable"
+    name: "燃える粗大ごみ（第4水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 4
+      weekday: "wed"
+
+  # ペットボトル
+  - id: "petbottle_3rd_wed"
+    category_id: "petbottle"
+    name: "ペットボトル（第3水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 3
+      weekday: "wed"
+
+  - id: "petbottle_4th_wed"
+    category_id: "petbottle"
+    name: "ペットボトル（第4水曜）"
+    rule:
+      type: "monthly_nth_weekday"
+      nth: 4
+      weekday: "wed"
+
+  # 容器包装プラスチック
+  - id: "plastic_1st_wed_and_3rd_wed"
+    category_id: "plastic"
+    name: "容器包装プラスチック（第1・第3水曜）"
+    rule:
+      type: "monthly_multiple_nth_weekday"
+      nths: [1, 3]
+      weekday: "wed"
+  
+  - id: "plastic_2nd_wed_and_4th_wed"
+    category_id: "plastic"
+    name: "容器包装プラスチック（第2・第4水曜）"
+    rule:
+      type: "monthly_multiple_nth_weekday"
+      nths: [2, 4]
+      weekday: "wed"
+
+area_group_schedule_links:
+  - area_group_id: "group_1"
+    schedules: 
+      - category_id: "burnable"
+        schedule_id: "burn_mon_thu"
+      - category_id: "nonburnable"
+        schedule_id: "nonburn_1st_wed"
+      - category_id: "can"
+        schedule_id: "can_1st_wed"
+      - category_id: "bottle"
+        schedule_id: "bottle_1st_wed"
+      - category_id: "large_burnable"
+        schedule_id: "large_burn_3rd_wed"
+      - category_id: "petbottle"
+        schedule_id: "petbottle_3rd_wed"
+      - category_id: "plastic_container"
+        schedule_id: "plastic_1st_wed_and_3rd_wed"
+
+  - area_group_id: "group_2"
+    schedules:
+      - category_id: "burnable"
+        schedule_id: "burn_tue_fri"
+      - category_id: "nonburnable"
+        schedule_id: "nonburn_1st_wed"
+      - category_id: "can"
+        schedule_id: "can_1st_wed"
+      - category_id: "bottle"
+        schedule_id: "bottle_1st_wed"
+      - category_id: "large_burnable"
+        schedule_id: "large_burn_3rd_wed"
+      - category_id: "petbottle"
+        schedule_id: "petbottle_3rd_wed"
+      - category_id: "plastic_container"
+        schedule_id: "plastic_1st_wed_and_3rd_wed"
+
+  - area_group_id: "group_3"
+    schedules:
+      - category_id: "burnable"
+        schedule_id: "burn_mon_thu"
+      - category_id: "nonburnable"
+        schedule_id: "nonburn_2nd_wed"
+      - category_id: "can"
+        schedule_id: "can_2nd_wed"
+      - category_id: "bottle"
+        schedule_id: "bottle_2nd_wed"
+      - category_id: "large_burnable"
+        schedule_id: "large_burn_4th_wed"
+      - category_id: "petbottle"
+        schedule_id: "petbottle_4th_wed"
+      - category_id: "plastic_container"
+        schedule_id: "plastic_2nd_wed_and_4th_wed"
+  
+  - area_group_id: "group_4"
+    schedules:
+      - category_id: "burnable"
+        schedule_id: "burn_tue_fri"
+      - category_id: "nonburnable"
+        schedule_id: "nonburn_2nd_wed"
+      - category_id: "can"
+        schedule_id: "can_2nd_wed"
+      - category_id: "bottle"
+        schedule_id: "bottle_2nd_wed"
+      - category_id: "large_burnable"
+        schedule_id: "large_burn_4th_wed"
+      - category_id: "petbottle"
+        schedule_id: "petbottle_4th_wed"
+      - category_id: "plastic_container"
+        schedule_id: "plastic_2nd_wed_and_4th_wed"
