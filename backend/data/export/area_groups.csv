@@ -1,4 +1,5 @@
-﻿group_id,name,note,source_id,updated_at
-general_mon_thu,一般ごみ（月・木）,,src_pdf_r7,2026-01-23T06:49:34
-general_tue_fri,一般ごみ（火・金）,,src_pdf_r7,2026-01-23T06:49:34
-first_wed_group,第１水曜（もえないごみ・あきかん・あきびん）,,src_pdf_r7,2026-01-23T06:49:34
+﻿area_group_id,name,note,source_id,updated_at
+group_1,地区グループ1,,src_pdf_r7,2026-01-24T08:16:54
+group_2,地区グループ2,,src_pdf_r7,2026-01-24T08:16:54
+group_3,地区グループ3,,src_pdf_r7,2026-01-24T08:16:54
+group_4,地区グループ4,,src_pdf_r7,2026-01-24T08:16:54

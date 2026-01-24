@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS schedule_groups (
     schedule_group_id TEXT PRIMARY KEY,
     category_id TEXT NOT NULL,
     name TEXT NOT NULL UNIQUE,
-    rule_type TEXT NOT NULL, -- weekly | month_dates
+    rule_type TEXT NOT NULL, -- weekly | monthly_nth_weekday | monthly_multiple_nth_weekday ...
+    rule_json TEXT NOT NULL, -- ルール本体
     note TEXT,
     source_id TEXT,
     updated_at TEXT,
@@ -82,23 +83,6 @@ CREATE TABLE IF NOT EXISTS area_group_schedule_links (
   PRIMARY KEY (area_group_id, schedule_group_id),
   FOREIGN KEY(area_group_id) REFERENCES area_groups(area_group_id) ON DELETE CASCADE,
   FOREIGN KEY(schedule_group_id) REFERENCES schedule_groups(schedule_group_id) ON DELETE CASCADE
-);
-
--- 収集ルールテーブル
-CREATE TABLE IF NOT EXISTS collection_rules (
-    rule_id TEXT PRIMARY KEY,
-    group_id TEXT NOT NULL,
-    category_id TEXT NOT NULL,
-    rule_type TEXT NOT NULL, -- weekly | month_dates
-    rule_json TEXT NOT NULL, -- ルールの詳細をJSONで保存
-    effective_start TEXT,
-    effective_end TEXT,
-    note TEXT,
-    source_id TEXT,
-    updated_at TEXT,
-    FOREIGN KEY(group_id) REFERENCES area_groups(group_id) ON DELETE CASCADE,
-    FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE,
-    FOREIGN KEY(source_id) REFERENCES sources(source_id)
 );
 
 -- アプリが最終的に引く「具体的な収集日（カレンダー）」
